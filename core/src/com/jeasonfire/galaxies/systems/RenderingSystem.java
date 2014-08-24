@@ -161,7 +161,7 @@ public class RenderingSystem extends EntitySystem {
 		if (Timer.getTime(Name.INFO) < 1000) {
 			drawText(infoText, GWIDTH / 2
 					- normalFont.getBounds(infoText).width / 2, GHEIGHT / 2
-					- normalFont.getBounds(infoText).height / 2, normalFont);
+					- normalFont.getBounds(infoText).height * 2.5f, normalFont);
 		} else if (Timer.timerExists(Name.INFO)) {
 			Timer.removeTimer(Name.INFO);
 		}
@@ -211,8 +211,8 @@ public class RenderingSystem extends EntitySystem {
 		}
 		if (cPlayer.statsOpen) {
 			drawStats(player);
-			drawPointers(player, entities);
 		}
+		drawPointers(player, entities);
 		drawPickupPointers(player, entities);
 		drawTutorials();
 	}
@@ -220,7 +220,7 @@ public class RenderingSystem extends EntitySystem {
 	private void drawTutorials() {
 		tutorialTime += Gdx.graphics.getDeltaTime();
 
-		float textSpeed = 8;
+		float textSpeed = 10;
 		if (tutorialTime < textSpeed) {
 			tutorialTimeTarget = textSpeed;
 			tutorialText = "Use the W/A/S/D keys to move.";
@@ -232,19 +232,16 @@ public class RenderingSystem extends EntitySystem {
 			tutorialText = "Hold Left Shift to open the Stats menu.";
 		} else if (tutorialTime < textSpeed * 4) {
 			tutorialTimeTarget = textSpeed * 4;
-			tutorialText = "Holding Left Shift also brings up green pointers that point at planets.";
+			tutorialText = "Being near a planet brings up the Shop menu.";
 		} else if (tutorialTime < textSpeed * 5) {
 			tutorialTimeTarget = textSpeed * 5;
-			tutorialText = "Being near a planet brings up the Shop menu.";
+			tutorialText = "In the Shop menu, you can buy upgrades, fuel and sell junk.";
 		} else if (tutorialTime < textSpeed * 6) {
 			tutorialTimeTarget = textSpeed * 6;
-			tutorialText = "In the Shop menu, you can buy upgrades, fuel and sell junk.";
+			tutorialText = "You get Junk by flying at asteroids. Blue pointers point at asteroids.";
 		} else if (tutorialTime < textSpeed * 7) {
 			tutorialTimeTarget = textSpeed * 7;
-			tutorialText = "You get Junk by flying at asteroids. Blue pointers point at asteroids.";
-		} else if (tutorialTime < textSpeed * 8) {
-			tutorialTimeTarget = textSpeed * 8;
-			tutorialText = "Remember to buy fuel so you don't run out! No more tutorials~";
+			tutorialText = "Remember to buy fuel so you don't run out! Green pointers point at planets.";
 		} else {
 			tutorialText = "";
 		}
@@ -268,12 +265,16 @@ public class RenderingSystem extends EntitySystem {
 			if (len > 4096) {
 				continue;
 			}
+			if (len < 180) {
+				continue;
+			}
 			x /= len;
 			y /= len;
 			SpriteLoader.POINTER.setRotation((float) Math.toDegrees(Math.atan2(
 					y, x)));
 			SpriteLoader.POINTER.setPosition(camera.position.x + x * 64,
 					camera.position.y + y * 64);
+			SpriteLoader.POINTER.setScale(4096 / len / 2);
 			SpriteLoader.POINTER.draw(batch);
 			continue;
 		}
@@ -298,12 +299,16 @@ public class RenderingSystem extends EntitySystem {
 			if (len > 512 && (pickupMapper.get(e).junkAmt < 2)) {
 				continue;
 			}
+			if (len < 180) {
+				continue;
+			}
 			x /= len;
 			y /= len;
 			SpriteLoader.POINTER_SMALL.setRotation((float) Math.toDegrees(Math
 					.atan2(y, x)));
 			SpriteLoader.POINTER_SMALL.setPosition(camera.position.x + x * 96,
 					camera.position.y + y * 96);
+			SpriteLoader.POINTER_SMALL.setScale(2048 / len / 2);
 			SpriteLoader.POINTER_SMALL.draw(batch);
 		}
 	}
