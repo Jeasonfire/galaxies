@@ -4,20 +4,18 @@ import com.artemis.Component;
 import com.jeasonfire.galaxies.util.SpriteLoader;
 
 public class CPlayer extends Component {
-	public static final float JUNK_COST = 5f, FUEL_COST = 2f,
+	public static final float JUNK_COST = 5f, FUEL_COST = 5f,
 			FUEL_PER_VELOCITY = 1f / SpriteLoader.PLAYER_STATIC.getWidth();
 
-	public float turningSpeed = 180f, brakeSpeed = 100f,
-			accelerationSpeed = 100f, aeroDyn = 300f;
-	public boolean thrust = true, shopOpen = false, statsOpen = false;
-	public int cash = 100, junk = 0;
-	public float fuel = 100, maxFuel = 100;
-	public int upgradeCostTurning = 150, upgradeCostBrake = 50,
-			upgradeCostAccel = 100, upgradeCostAeroDyn = 150,
-			upgradeCostFuel = 200;
-	public float upgradeMultiplierTurning = 1.5f,
-			upgradeMultiplierBrake = 1.5f, upgradeMultiplierAccel = 1.5f,
-			upgradeMultiplierAeroDyn = 1.5f, upgradeMultiplierFuel = 2.0f;
+	public float turningSpeed, brakeSpeed, accelerationSpeed, aeroDyn;
+	public boolean thrust, shopOpen, statsOpen;
+	public int cash, junk;
+	public float fuel, maxFuel;
+	public int upgradeCostTurning, upgradeCostBrake, upgradeCostAccel,
+			upgradeCostAeroDyn, upgradeCostFuel;
+	public float upgradeMultiplierTurning, upgradeMultiplierBrake,
+			upgradeMultiplierAccel, upgradeMultiplierAeroDyn,
+			upgradeMultiplierFuel;
 
 	public void resetStats() {
 		turningSpeed = 180f;
@@ -32,8 +30,8 @@ public class CPlayer extends Component {
 		cash = 100;
 		junk = 0;
 
-		fuel = 100;
-		maxFuel = 100;
+		fuel = 20;
+		maxFuel = 20;
 
 		upgradeCostTurning = 150;
 		upgradeCostBrake = 50;
@@ -45,7 +43,7 @@ public class CPlayer extends Component {
 		upgradeMultiplierBrake = 1.5f;
 		upgradeMultiplierAccel = 1.5f;
 		upgradeMultiplierAeroDyn = 1.5f;
-		upgradeMultiplierFuel = 2.0f;
+		upgradeMultiplierFuel = 1.5f;
 	}
 
 	public boolean upgradeTurning() {

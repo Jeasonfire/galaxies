@@ -84,7 +84,7 @@ public class EntityManager {
 	public static Entity createPlanet(float centerX, float centerY) {
 		Entity planet = world.createEntity();
 		planet.addComponent(new CPosition());
-		float orbitSpeed = random.nextInt(120) + 240;
+		float orbitSpeed = random.nextInt(1200) + 1800;
 		planet.addComponent(new COrbit(centerX, centerY,
 				random.nextInt(4096) + 2048, orbitSpeed));
 		switch (random.nextInt(3)) {

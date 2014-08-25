@@ -34,7 +34,7 @@ public class Galaxies extends ApplicationAdapter {
 	private ParticleRenderingSystem particleSystem;
 	
 	private static Music music;
-	private static Sound dingLow, dingMedium, dingHigh;
+	private static Sound dingLow, dingMedium, dingHigh, dingLong;
 
 	@Override
 	public void create() {
@@ -82,11 +82,12 @@ public class Galaxies extends ApplicationAdapter {
 		dingLow = Gdx.audio.newSound(Gdx.files.internal("dingLow.ogg"));
 		dingMedium = Gdx.audio.newSound(Gdx.files.internal("dingMedium.ogg"));
 		dingHigh = Gdx.audio.newSound(Gdx.files.internal("dingHigh.ogg"));
+		dingLong = Gdx.audio.newSound(Gdx.files.internal("dingLong.ogg"));
 	}
 
 	private void createStarSystem(float x, float y) {
 		EntityManager.createStar(x, y);
-		int amtOfPlanets = new Random().nextInt(8) + 2;
+		int amtOfPlanets = new Random().nextInt(4) + 2;
 		for (int i = 0; i < amtOfPlanets; i++) {
 			if (startingPlanet == null) {
 				startingPlanet = EntityManager.createPlanet(x, y);
@@ -120,13 +121,16 @@ public class Galaxies extends ApplicationAdapter {
 	
 	public static void playSound(String name) {
 		if (name.equals(Name.HIGH)) {
-			dingHigh.play(0.5f);
+			dingHigh.play(0.3f);
 		}
 		if (name.equals(Name.MED)) {
-			dingMedium.play(0.5f);
+			dingMedium.play(0.3f);
 		}
 		if (name.equals(Name.LOW)) {
-			dingLow.play(0.5f);
+			dingLow.play(0.3f);
+		}
+		if (name.equals(Name.LONG)) {
+			dingLong.play(0.3f);
 		}
 	}
 

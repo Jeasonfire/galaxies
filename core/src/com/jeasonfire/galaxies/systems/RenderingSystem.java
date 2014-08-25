@@ -7,6 +7,7 @@ import com.artemis.EntitySystem;
 import com.artemis.annotations.Mapper;
 import com.artemis.utils.ImmutableBag;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -52,7 +53,8 @@ public class RenderingSystem extends EntitySystem {
 
 	private String infoText;
 	private String tutorialText;
-	private float tutorialTime = 0, tutorialTimeTarget = 0;
+	private float tutorialTime = 0, tutorialXOffset = 0;
+	private boolean tutorial = true;
 
 	@SuppressWarnings("unchecked")
 	public RenderingSystem() {
@@ -148,7 +150,7 @@ public class RenderingSystem extends EntitySystem {
 				largeFont).contains(Gdx.input.getX(), Gdx.input.getY())) {
 			quitText = "> Quit <";
 			if (Gdx.input.justTouched()) {
-				Galaxies.instance.startGame();
+				Gdx.app.exit();
 			}
 		}
 		drawText(quitText,
@@ -211,6 +213,8 @@ public class RenderingSystem extends EntitySystem {
 		}
 		if (cPlayer.statsOpen) {
 			drawStats(player);
+		} else {
+			tutorialXOffset = 20;
 		}
 		drawPointers(player, entities);
 		drawPickupPointers(player, entities);
@@ -218,38 +222,43 @@ public class RenderingSystem extends EntitySystem {
 	}
 
 	private void drawTutorials() {
+		if (!tutorial) {
+			return;
+		}
+		
+		float lastTutorialTime = tutorialTime;
 		tutorialTime += Gdx.graphics.getDeltaTime();
 
-		float textSpeed = 10;
+		float textSpeed = 15;
 		if (tutorialTime < textSpeed) {
-			tutorialTimeTarget = textSpeed;
-			tutorialText = "Use the W/A/S/D keys to move.";
+			tutorialText = "Tutorial:\nUse the W/A/S/D keys to move.";
 		} else if (tutorialTime < textSpeed * 2) {
-			tutorialTimeTarget = textSpeed * 2;
-			tutorialText = "Use the Space key to turn off your thrusters temporarily.";
+			tutorialText = "Tutorial:\nUse the Space key to turn off your thrusters temporarily. (this acts as a kind of \"brake\" button, useful for moving in slow speeds)";
 		} else if (tutorialTime < textSpeed * 3) {
-			tutorialTimeTarget = textSpeed * 3;
-			tutorialText = "Hold Left Shift to open the Stats menu.";
+			tutorialText = "Tutorial:\nHold Left Shift to open the Stats menu.";
 		} else if (tutorialTime < textSpeed * 4) {
-			tutorialTimeTarget = textSpeed * 4;
-			tutorialText = "Being near a planet brings up the Shop menu.";
+			tutorialText = "Tutorial:\nBeing near a planet brings up the Shop menu.";
 		} else if (tutorialTime < textSpeed * 5) {
-			tutorialTimeTarget = textSpeed * 5;
-			tutorialText = "In the Shop menu, you can buy upgrades, fuel and sell junk.";
+			tutorialText = "Tutorial:\nIn the Shop menu, you can buy upgrades, fuel and sell junk.";
 		} else if (tutorialTime < textSpeed * 6) {
-			tutorialTimeTarget = textSpeed * 6;
-			tutorialText = "You get Junk by flying at asteroids. Blue pointers point at asteroids.";
+			tutorialText = "Tutorial:\nYou get Junk by flying at asteroids. Blue pointers point at asteroids.";
 		} else if (tutorialTime < textSpeed * 7) {
-			tutorialTimeTarget = textSpeed * 7;
-			tutorialText = "Remember to buy fuel so you don't run out! Green pointers point at planets.";
+			tutorialText = "Tutorial:\nRemember to buy fuel so you don't run out! Green pointers point at planets.";
 		} else {
 			tutorialText = "";
+			tutorial = false;
 		}
-
-		float yOffset = (int) (tutorialTimeTarget % textSpeed)
-				- (tutorialTime - (tutorialTimeTarget - textSpeed));
-		drawText(tutorialText, 220, GHEIGHT + 25 + yOffset * (GHEIGHT + 150)
-				/ textSpeed, 200, normalFont);
+		
+		if (Gdx.input.isKeyPressed(Keys.ESCAPE)) {
+			tutorial = false;
+		}
+		
+		if ((int) lastTutorialTime / (int) textSpeed < (int) tutorialTime
+				/ (int) textSpeed) {
+			tutorialTime++;
+			Galaxies.playSound(Name.LONG);
+		}
+		drawText(tutorialText + "\n\nPress Esc to hide tutorials.", tutorialXOffset, 20, 200, normalFont);
 	}
 
 	private void drawPointers(Entity player, ImmutableBag<Entity> entities) {
@@ -262,7 +271,7 @@ public class RenderingSystem extends EntitySystem {
 			float x = positionMapper.get(e).x - positionMapper.get(player).x;
 			float y = positionMapper.get(e).y - positionMapper.get(player).y;
 			float len = (float) Math.sqrt(x * x + y * y);
-			if (len > 4096) {
+			if (len > 8192) {
 				continue;
 			}
 			if (len < 180) {
@@ -274,7 +283,7 @@ public class RenderingSystem extends EntitySystem {
 					y, x)));
 			SpriteLoader.POINTER.setPosition(camera.position.x + x * 64,
 					camera.position.y + y * 64);
-			SpriteLoader.POINTER.setScale(4096 / len / 2);
+			SpriteLoader.POINTER.setScale(8192 / len / 12);
 			SpriteLoader.POINTER.draw(batch);
 			continue;
 		}
@@ -308,7 +317,7 @@ public class RenderingSystem extends EntitySystem {
 					.atan2(y, x)));
 			SpriteLoader.POINTER_SMALL.setPosition(camera.position.x + x * 96,
 					camera.position.y + y * 96);
-			SpriteLoader.POINTER_SMALL.setScale(2048 / len / 2);
+			SpriteLoader.POINTER_SMALL.setScale(2048 / len / 4);
 			SpriteLoader.POINTER_SMALL.draw(batch);
 		}
 	}
@@ -317,6 +326,8 @@ public class RenderingSystem extends EntitySystem {
 		CPlayer cPlayer = player.getComponent(CPlayer.class);
 		int uiXOffset = (int) Math.min(30, Timer.getTime(Name.UI)
 				- SpriteLoader.UI_BACKGROUND.getWidth()), uiYOffset = 55, rowHeight = 40;
+		tutorialXOffset = uiXOffset + SpriteLoader.UI_BACKGROUND.getWidth()
+				+ 20;
 		drawSprite(SpriteLoader.UI_BACKGROUND, uiXOffset - 10, 20);
 		drawText("Stats", uiXOffset, 30, largeFont);
 		int shipSize = (int) SpriteLoader.PLAYER_STATIC.getWidth();

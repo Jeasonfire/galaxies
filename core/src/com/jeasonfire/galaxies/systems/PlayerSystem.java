@@ -10,6 +10,7 @@ import com.jeasonfire.galaxies.components.CCollider;
 import com.jeasonfire.galaxies.components.COrbit;
 import com.jeasonfire.galaxies.components.CPickup;
 import com.jeasonfire.galaxies.components.CPlayer;
+import com.jeasonfire.galaxies.components.CPosition;
 import com.jeasonfire.galaxies.util.EntityManager;
 import com.jeasonfire.galaxies.util.GameState;
 import com.jeasonfire.galaxies.util.Name;
@@ -20,6 +21,8 @@ public class PlayerSystem extends EntityProcessingSystem {
 	private ComponentMapper<COrbit> orbitMapper;
 	@Mapper 
 	private ComponentMapper<CPickup> pickupMapper;
+	@Mapper
+	private ComponentMapper<CPosition> positionMapper;
 	
 	@SuppressWarnings("unchecked")
 	public PlayerSystem() {
